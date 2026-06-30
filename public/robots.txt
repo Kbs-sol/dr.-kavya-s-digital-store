@@ -1,0 +1,32 @@
+# Dr. Kavya's Hair & Skin Care — https://drkavyas.in
+# robots.txt — Last updated 2026-06
+
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /account
+Disallow: /account/
+Disallow: /checkout
+Disallow: /cart
+Disallow: /auth
+Disallow: /api/
+Disallow: /_server/
+Disallow: /lovable/
+
+# Allow Google Shopping crawler
+User-agent: Googlebot
+Allow: /product/
+Allow: /shop
+Allow: /shop/
+Allow: /
+
+# Sitemap
+Sitemap: https://drkavyas.in/sitemap.xml
+
+# Crawl-delay for bots
+User-agent: AhrefsBot
+Crawl-delay: 10
+
+User-agent: SemrushBot
+Crawl-delay: 10

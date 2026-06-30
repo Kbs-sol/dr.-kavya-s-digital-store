@@ -1,0 +1,532 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ═══════════════════════════════════════════════════════════════
+   Dr. Kavya's Hair & Skin Care
+   Brand: Earthy Ayurvedic Apothecary — Doctor-led, handcrafted
+   Primary palette: Bhringraj Brown · Antique Gold · Henna Green
+   ═══════════════════════════════════════════════════════════════ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-brand-brown: var(--brand-brown);
+  --color-brand-gold: var(--brand-gold);
+  --color-brand-tan: var(--brand-tan);
+  --color-brand-green: var(--brand-green);
+  --color-brand-red: var(--brand-red);
+  --color-brand-cream: var(--brand-cream);
+  --color-brand-mustard: var(--brand-mustard);
+  --color-brand-olive: var(--brand-olive);
+  --color-brand-terracotta: var(--brand-terracotta);
+  --font-display: "Playfair Display", ui-serif, Georgia, "Times New Roman", serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-wordmark: "Montserrat", ui-sans-serif, system-ui, sans-serif;
+  --font-hand: "Caveat", "Comic Sans MS", cursive;
+}
+
+:root {
+  --radius: 0.25rem;  /* Sharper corners — apothecary/craft feel */
+
+  /* ── Brand Palette ── */
+  --brand-brown:      #3D2F1A;  /* Bhringraj Brown — primary dark */
+  --brand-gold:       #8A6D3B;  /* Antique Gold — accent */
+  --brand-tan:        #D4B483;  /* Kraft Tan — warm mid */
+  --brand-green:      #5E7142;  /* Henna Green — botanical */
+  --brand-red:        #C2462E;  /* Hibiscus Red — urgency/accent */
+  --brand-cream:      #F5EAD7;  /* Cream Linen — bg secondary */
+  --brand-mustard:    #C8963E;  /* Mustard Gold — packaging accent */
+  --brand-olive:      #6B7C4A;  /* Olive — body care */
+  --brand-terracotta: #B85A3A;  /* Terracotta — face packs */
+
+  /* ── Semantic Tokens ── */
+  --background: #FAF5EA;        /* Warm off-white — like handmade paper */
+  --foreground: #2C2016;        /* Near-black with brown undertone */
+  --card: #FFFBF2;              /* Pure warm white for cards */
+  --card-foreground: #3D2F1A;
+  --popover: #FFFBF2;
+  --popover-foreground: #3D2F1A;
+  --primary: #3D2F1A;
+  --primary-foreground: #F5EAD7;
+  --secondary: #EDD9B2;
+  --secondary-foreground: #3D2F1A;
+  --muted: #EDE0C4;
+  --muted-foreground: #6B5638;
+  --accent: #8A6D3B;
+  --accent-foreground: #F5EAD7;
+  --destructive: #C2462E;
+  --destructive-foreground: #F5EAD7;
+  --border: #D9C4A0;
+  --input: #D9C4A0;
+  --ring: #8A6D3B;
+  --chart-1: #3D2F1A;
+  --chart-2: #8A6D3B;
+  --chart-3: #5E7142;
+  --chart-4: #C2462E;
+  --chart-5: #D4B483;
+  --sidebar: #2C2016;
+  --sidebar-foreground: #F5EAD7;
+  --sidebar-primary: #8A6D3B;
+  --sidebar-primary-foreground: #F5EAD7;
+  --sidebar-accent: #4A3520;
+  --sidebar-accent-foreground: #F5EAD7;
+  --sidebar-border: #4A3520;
+  --sidebar-ring: #8A6D3B;
+}
+
+.dark {
+  --background: oklch(0.18 0.025 60);
+  --foreground: oklch(0.96 0.025 85);
+  --card: oklch(0.22 0.032 60);
+  --card-foreground: oklch(0.96 0.025 85);
+  --popover: oklch(0.22 0.032 60);
+  --popover-foreground: oklch(0.96 0.025 85);
+  --primary: oklch(0.80 0.07 75);
+  --primary-foreground: oklch(0.18 0.025 60);
+  --secondary: oklch(0.30 0.042 60);
+  --secondary-foreground: oklch(0.96 0.025 85);
+  --muted: oklch(0.30 0.042 60);
+  --muted-foreground: oklch(0.74 0.04 75);
+  --accent: oklch(0.55 0.09 75);
+  --accent-foreground: oklch(0.96 0.025 85);
+  --destructive: oklch(0.58 0.19 35);
+  --destructive-foreground: oklch(0.96 0.025 85);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 14%);
+  --ring: oklch(0.55 0.09 75);
+  --sidebar: oklch(0.20 0.032 60);
+  --sidebar-foreground: oklch(0.96 0.025 85);
+  --sidebar-primary: oklch(0.55 0.09 75);
+  --sidebar-primary-foreground: oklch(0.96 0.025 85);
+  --sidebar-accent: oklch(0.28 0.042 60);
+  --sidebar-accent-foreground: oklch(0.96 0.025 85);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.55 0.09 75);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   BASE LAYER
+   ───────────────────────────────────────────────────────────── */
+@layer base {
+  * {
+    border-color: var(--color-border);
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01", "cv11", "liga" 1;
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+
+  h5, h6 {
+    font-family: var(--font-wordmark);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+  }
+
+  /* Font utility classes */
+  .font-display  { font-family: var(--font-display); }
+  .font-wordmark { font-family: var(--font-wordmark); letter-spacing: 0.18em; text-transform: uppercase; }
+  .font-hand     { font-family: var(--font-hand); }
+
+  /* ── Kraft paper texture ── */
+  .bg-kraft {
+    background-color: #FAF5EA;
+    background-image:
+      radial-gradient(ellipse at 15% 8%, rgba(212, 180, 131, 0.30) 0px, transparent 55%),
+      radial-gradient(ellipse at 85% 92%, rgba(94, 113, 66, 0.15) 0px, transparent 55%),
+      radial-gradient(ellipse at 50% 50%, rgba(138, 109, 59, 0.06) 0px, transparent 70%);
+  }
+
+  /* ── Gold botanical divider ── */
+  .divider-botanical {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .divider-botanical::before,
+  .divider-botanical::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--brand-gold), transparent);
+    opacity: 0.45;
+  }
+
+  /* ── Announcement bar gradient ── */
+  .bg-announcement {
+    background: linear-gradient(90deg, #3D2F1A 0%, #5A3D20 50%, #3D2F1A 100%);
+  }
+
+  /* ── Product image hover effect ── */
+  .product-img-wrap {
+    overflow: hidden;
+    position: relative;
+  }
+  .product-img-wrap img {
+    transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  .product-img-wrap:hover img {
+    transform: scale(1.04);
+  }
+
+  /* ── Button shimmer on hover ── */
+  .btn-shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-shimmer::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+    transition: left 0.5s ease;
+  }
+  .btn-shimmer:hover::after {
+    left: 140%;
+  }
+
+  /* ── Star rating ── */
+  .star-filled  { color: #C8963E; }
+  .star-empty   { color: #D9C4A0; }
+
+  /* ── Tag / Badge chip ── */
+  .badge-herb {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(94,113,66,0.12);
+    color: var(--brand-green);
+    border: 1px solid rgba(94,113,66,0.25);
+    border-radius: 2px;
+    font-family: var(--font-wordmark);
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    font-weight: 600;
+  }
+  .badge-doctor {
+    background: rgba(61,47,26,0.08);
+    color: var(--brand-brown);
+    border-color: rgba(61,47,26,0.20);
+  }
+  .badge-bestseller {
+    background: rgba(200,150,62,0.12);
+    color: var(--brand-mustard);
+    border-color: rgba(200,150,62,0.25);
+  }
+  .badge-sale {
+    background: rgba(194,70,46,0.10);
+    color: var(--brand-red);
+    border-color: rgba(194,70,46,0.25);
+  }
+
+  /* ── Sticky header glass morphism ── */
+  .header-glass {
+    background: rgba(250, 245, 234, 0.88);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border-bottom: 1px solid rgba(212,180,131,0.4);
+  }
+
+  /* ── Ingredient card ── */
+  .ingredient-card {
+    border: 1px solid var(--color-border);
+    padding: 1.5rem;
+    background: var(--color-card);
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+  }
+  .ingredient-card:hover {
+    border-color: var(--brand-gold);
+    box-shadow: 0 4px 20px rgba(61,47,26,0.08);
+    transform: translateY(-2px);
+  }
+
+  /* ── Quote block ── */
+  .quote-block {
+    border-left: 3px solid var(--brand-gold);
+    padding-left: 1.5rem;
+    font-family: var(--font-display);
+    font-style: italic;
+  }
+
+  /* ── Section fade-in animation ── */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .fade-in-up { animation: fadeInUp 0.6s ease both; }
+
+  /* ── Testimonial card ── */
+  .testimonial-card {
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    padding: 1.75rem;
+    position: relative;
+  }
+  .testimonial-card::before {
+    content: "\201C";
+    position: absolute;
+    top: 0.75rem;
+    left: 1.25rem;
+    font-family: var(--font-display);
+    font-size: 4rem;
+    color: var(--brand-tan);
+    line-height: 1;
+    opacity: 0.5;
+  }
+
+  /* ── Trust badge row ── */
+  .trust-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid var(--color-border);
+    border-radius: 2rem;
+    padding: 6px 16px;
+    font-family: var(--font-wordmark);
+    font-size: 9.5px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--brand-brown);
+    background: rgba(255,251,242,0.9);
+    white-space: nowrap;
+  }
+
+  /* ── Whatsapp floating button ── */
+  .whatsapp-fab {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    z-index: 100;
+    background: #25D366;
+    color: #fff;
+    border-radius: 50%;
+    width: 3.25rem;
+    height: 3.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 16px rgba(37,211,102,0.4);
+    transition: transform 0.2s, box-shadow 0.2s;
+    text-decoration: none;
+  }
+  .whatsapp-fab:hover {
+    transform: scale(1.08);
+    box-shadow: 0 6px 24px rgba(37,211,102,0.5);
+  }
+
+  /* ── Checkout / Form inputs ── */
+  .form-input {
+    width: 100%;
+    background: transparent;
+    border: 1px solid var(--color-border);
+    padding: 0.75rem 0.875rem;
+    font-size: 0.875rem;
+    color: var(--color-foreground);
+    outline: none;
+    transition: border-color 0.15s;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-sans);
+  }
+  .form-input:focus {
+    border-color: var(--brand-brown);
+    box-shadow: 0 0 0 3px rgba(61,47,26,0.08);
+  }
+  .form-input::placeholder {
+    color: var(--color-muted-foreground);
+    opacity: 0.8;
+  }
+
+  /* ── Primary CTA button ── */
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: var(--brand-brown);
+    color: var(--brand-cream);
+    font-family: var(--font-wordmark);
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 0.875rem 1.75rem;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
+  }
+  .btn-primary:hover {
+    background: var(--brand-gold);
+    transform: translateY(-1px);
+  }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  /* ── Ghost CTA button ── */
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: transparent;
+    color: var(--brand-brown);
+    font-family: var(--font-wordmark);
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 0.875rem 1.75rem;
+    border: 1px solid rgba(61,47,26,0.35);
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    text-decoration: none;
+  }
+  .btn-ghost:hover {
+    border-color: var(--brand-brown);
+    background: rgba(61,47,26,0.04);
+  }
+
+  /* ── Scrollbar styling ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--color-muted); }
+  ::-webkit-scrollbar-thumb { background: var(--brand-tan); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--brand-gold); }
+
+  /* ── Selection highlight ── */
+  ::selection {
+    background: rgba(138,109,59,0.2);
+    color: var(--brand-brown);
+  }
+
+  /* ── Focus ring ── */
+  :focus-visible {
+    outline: 2px solid var(--brand-gold);
+    outline-offset: 2px;
+  }
+
+  /* ── Product packaging color classes ── */
+  .pouch-hair    { background: linear-gradient(135deg, #5A3D1A, #8A6D3B); }
+  .pouch-skin    { background: linear-gradient(135deg, #6B2D1A, #B85A3A); }
+  .pouch-body    { background: linear-gradient(135deg, #4A5A2A, #8A9A5A); }
+  .pouch-gift    { background: linear-gradient(135deg, #3A2A12, #6B5028); }
+
+  /* ── Loading spinner ── */
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spinner {
+    width: 1.5rem;
+    height: 1.5rem;
+    border: 2px solid var(--color-border);
+    border-top-color: var(--brand-brown);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  /* ── Image lazy load fade ── */
+  img[loading="lazy"] { opacity: 0; transition: opacity 0.4s; }
+  img[loading="lazy"].loaded { opacity: 1; }
+
+  /* ── Mobile bottom nav safe area ── */
+  @supports (padding-bottom: env(safe-area-inset-bottom)) {
+    .pb-safe { padding-bottom: calc(1rem + env(safe-area-inset-bottom)); }
+  }
+
+  /* ── Admin table styles ── */
+  .admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8125rem;
+  }
+  .admin-table th {
+    font-family: var(--font-wordmark);
+    font-size: 0.625rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--color-muted-foreground);
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--color-border);
+    background: rgba(0,0,0,0.02);
+  }
+  .admin-table td {
+    padding: 0.875rem 1rem;
+    border-bottom: 1px solid var(--color-border);
+    vertical-align: middle;
+  }
+  .admin-table tr:hover td {
+    background: rgba(138,109,59,0.04);
+  }
+
+  /* ── Print styles ── */
+  @media print {
+    .header-glass, .whatsapp-fab, nav { display: none !important; }
+    body { background: white; color: black; }
+  }
+}

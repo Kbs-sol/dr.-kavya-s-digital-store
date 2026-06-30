@@ -1,0 +1,31 @@
+# Dr. Kavya's Hair & Skin Care
+
+> Handcrafted herbal hair masks, face packs, and oils made by mom. 100% natural, chemical-free, made in India. Freemium-scalable storefront with admin CRUD.
+
+## Pages
+
+- [Home](/): Brand story and featured herbal products.
+- [Shop](/shop): Full catalog of hair and skin care products.
+- [Search](/search): Search products by name or concern.
+- [Quiz](/quiz): Hair & skin concern quiz with product recommendations.
+- [Track Order](/track): Guest order tracking by order ID and email.
+- [FAQ](/faq): Frequently asked questions on shipping, usage, and ingredients.
+- [Story](/story): Founder story behind Dr. Kavya's Hair & Skin Care.
+- [Ingredients](/ingredients): Herbs and natural ingredients we use.
+- [Journal](/journal): Articles on hair and skin care.
+- [Contact](/contact): Reach out for support or wholesale inquiries.
+- [Cart](/cart): Review items before checkout.
+- [Checkout](/checkout): Secure Razorpay checkout (flat ₹79 shipping).
+- [Account](/account): Customer account and order history.
+- [Sign In](/auth): Sign in or create an account.
+
+## Products
+
+- Herbal Hair Mask (100g / 200g): Hair fall and conditioning.
+- Hair Fall Control: Severe hair fall and regrowth.
+- Anti-Dandruff Mask: Dandruff and itchy scalp.
+- Fresh Bhringraj Oil: Premature greying.
+- Multi-Action Face Pack: Detan, pigmentation, acne, glow.
+- Detan Face Pack: Sun tan and dullness.
+- Herbal Bath Powder (Nalugu Pindi): Body glow, soap-free wash.
+- Hair + Skin Starter Combo: First-order favourite.
