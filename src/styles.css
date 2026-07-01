@@ -6,8 +6,9 @@
 
 /* ═══════════════════════════════════════════════════════════════
    Dr. Kavya's Hair & Skin Care
-   Brand: Earthy Ayurvedic Apothecary — Doctor-led, handcrafted
-   Primary palette: Bhringraj Brown · Antique Gold · Henna Green
+   Brand: Bold Ayurvedic Apothecary — Doctor-led, handcrafted
+   Primary palette: Deep Katha Brown · Saffron Gold · Tulsi Green
+   Aesthetic: Saturated, warm, handcrafted Indian artisan
    ═══════════════════════════════════════════════════════════════ */
 
 @theme inline {
@@ -60,6 +61,8 @@
   --color-brand-mustard: var(--brand-mustard);
   --color-brand-olive: var(--brand-olive);
   --color-brand-terracotta: var(--brand-terracotta);
+  --color-brand-saffron: var(--brand-saffron);
+  --color-brand-indigo: var(--brand-indigo);
   --font-display: "Playfair Display", ui-serif, Georgia, "Times New Roman", serif;
   --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-wordmark: "Montserrat", ui-sans-serif, system-ui, sans-serif;
@@ -69,50 +72,57 @@
 :root {
   --radius: 0.25rem;  /* Sharper corners — apothecary/craft feel */
 
-  /* ── Brand Palette ── */
-  --brand-brown:      #3D2F1A;  /* Bhringraj Brown — primary dark */
-  --brand-gold:       #8A6D3B;  /* Antique Gold — accent */
-  --brand-tan:        #D4B483;  /* Kraft Tan — warm mid */
-  --brand-green:      #5E7142;  /* Henna Green — botanical */
-  --brand-red:        #C2462E;  /* Hibiscus Red — urgency/accent */
-  --brand-cream:      #F5EAD7;  /* Cream Linen — bg secondary */
-  --brand-mustard:    #C8963E;  /* Mustard Gold — packaging accent */
-  --brand-olive:      #6B7C4A;  /* Olive — body care */
-  --brand-terracotta: #B85A3A;  /* Terracotta — face packs */
+  /* ══════════════════════════════════════════════════════
+     BRAND PALETTE — Bold Ayurvedic Artisan
+     Deep katha tones, rich saffron, herb-green, raw earth
+     ══════════════════════════════════════════════════════ */
+
+  /* Core brand colours (punchy, saturated) */
+  --brand-brown:      #2A1A08;  /* Deep Katha — near-black brown, rich & bold */
+  --brand-gold:       #B07D2A;  /* Haldi Saffron Gold — vivid, warm, artisan */
+  --brand-tan:        #E8C07A;  /* Sun-dried Turmeric — warm amber highlight */
+  --brand-green:      #3A6B30;  /* Tulsi Deep Green — botanical, confident */
+  --brand-red:        #C0321A;  /* Hibiscus Crimson — urgent, spice-market red */
+  --brand-cream:      #F8EDD8;  /* Raw Cotton — warmer, richer than before */
+  --brand-mustard:    #D4861E;  /* Kesari Mustard — punchy Indian yellow */
+  --brand-olive:      #556B2F;  /* Curry Leaf Olive — dense, herbal */
+  --brand-terracotta: #A84020;  /* Sindoor Terracotta — bold face-pack red */
+  --brand-saffron:    #E07B1A;  /* Pure Saffron — hero highlight */
+  --brand-indigo:     #2C3E6B;  /* Neel (Indigo dye) — bold dark accent */
 
   /* ── Semantic Tokens ── */
-  --background: #FAF5EA;        /* Warm off-white — like handmade paper */
-  --foreground: #2C2016;        /* Near-black with brown undertone */
-  --card: #FFFBF2;              /* Pure warm white for cards */
-  --card-foreground: #3D2F1A;
-  --popover: #FFFBF2;
-  --popover-foreground: #3D2F1A;
-  --primary: #3D2F1A;
-  --primary-foreground: #F5EAD7;
-  --secondary: #EDD9B2;
-  --secondary-foreground: #3D2F1A;
-  --muted: #EDE0C4;
-  --muted-foreground: #6B5638;
-  --accent: #8A6D3B;
-  --accent-foreground: #F5EAD7;
-  --destructive: #C2462E;
-  --destructive-foreground: #F5EAD7;
-  --border: #D9C4A0;
-  --input: #D9C4A0;
-  --ring: #8A6D3B;
-  --chart-1: #3D2F1A;
-  --chart-2: #8A6D3B;
-  --chart-3: #5E7142;
-  --chart-4: #C2462E;
-  --chart-5: #D4B483;
-  --sidebar: #2C2016;
-  --sidebar-foreground: #F5EAD7;
-  --sidebar-primary: #8A6D3B;
-  --sidebar-primary-foreground: #F5EAD7;
-  --sidebar-accent: #4A3520;
-  --sidebar-accent-foreground: #F5EAD7;
-  --sidebar-border: #4A3520;
-  --sidebar-ring: #8A6D3B;
+  --background: #F7EDDA;        /* Aged parchment — warm, inviting, not stark white */
+  --foreground: #1A0F05;        /* Deep katha ink — maximum contrast */
+  --card: #FDF4E3;              /* Warm paper — cards pop against bg */
+  --card-foreground: #2A1A08;
+  --popover: #FDF4E3;
+  --popover-foreground: #2A1A08;
+  --primary: #2A1A08;
+  --primary-foreground: #F8EDD8;
+  --secondary: #E8C07A;
+  --secondary-foreground: #2A1A08;
+  --muted: #EDD8B0;
+  --muted-foreground: #7A5230;
+  --accent: #B07D2A;
+  --accent-foreground: #F8EDD8;
+  --destructive: #C0321A;
+  --destructive-foreground: #F8EDD8;
+  --border: #C8A86A;            /* Richer gold border — visible, defined */
+  --input: #C8A86A;
+  --ring: #B07D2A;
+  --chart-1: #2A1A08;
+  --chart-2: #B07D2A;
+  --chart-3: #3A6B30;
+  --chart-4: #C0321A;
+  --chart-5: #E8C07A;
+  --sidebar: #1A0F05;           /* Near-black sidebar — dramatic contrast */
+  --sidebar-foreground: #F8EDD8;
+  --sidebar-primary: #B07D2A;
+  --sidebar-primary-foreground: #F8EDD8;
+  --sidebar-accent: #2A1A08;
+  --sidebar-accent-foreground: #F8EDD8;
+  --sidebar-border: #3D2410;
+  --sidebar-ring: #B07D2A;
 }
 
 .dark {
@@ -190,11 +200,11 @@
 
   /* ── Kraft paper texture ── */
   .bg-kraft {
-    background-color: #FAF5EA;
+    background-color: #F7EDDA;
     background-image:
-      radial-gradient(ellipse at 15% 8%, rgba(212, 180, 131, 0.30) 0px, transparent 55%),
-      radial-gradient(ellipse at 85% 92%, rgba(94, 113, 66, 0.15) 0px, transparent 55%),
-      radial-gradient(ellipse at 50% 50%, rgba(138, 109, 59, 0.06) 0px, transparent 70%);
+      radial-gradient(ellipse at 15% 8%, rgba(224, 123, 26, 0.18) 0px, transparent 55%),
+      radial-gradient(ellipse at 85% 92%, rgba(58, 107, 48, 0.12) 0px, transparent 55%),
+      radial-gradient(ellipse at 50% 50%, rgba(176, 125, 42, 0.08) 0px, transparent 70%);
   }
 
   /* ── Gold botanical divider ── */
@@ -214,7 +224,7 @@
 
   /* ── Announcement bar gradient ── */
   .bg-announcement {
-    background: linear-gradient(90deg, #3D2F1A 0%, #5A3D20 50%, #3D2F1A 100%);
+    background: linear-gradient(90deg, #1A0F05 0%, #2A1A08 40%, #3D2010 60%, #1A0F05 100%);
   }
 
   /* ── Product image hover effect ── */
@@ -249,17 +259,17 @@
   }
 
   /* ── Star rating ── */
-  .star-filled  { color: #C8963E; }
-  .star-empty   { color: #D9C4A0; }
+  .star-filled  { color: #D4861E; }
+  .star-empty   { color: #C8A86A; }
 
   /* ── Tag / Badge chip ── */
   .badge-herb {
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    background: rgba(94,113,66,0.12);
+    background: rgba(58,107,48,0.14);
     color: var(--brand-green);
-    border: 1px solid rgba(94,113,66,0.25);
+    border: 1px solid rgba(58,107,48,0.35);
     border-radius: 2px;
     font-family: var(--font-wordmark);
     font-size: 9px;
@@ -269,27 +279,27 @@
     font-weight: 600;
   }
   .badge-doctor {
-    background: rgba(61,47,26,0.08);
+    background: rgba(42,26,8,0.09);
     color: var(--brand-brown);
-    border-color: rgba(61,47,26,0.20);
+    border-color: rgba(42,26,8,0.25);
   }
   .badge-bestseller {
-    background: rgba(200,150,62,0.12);
+    background: rgba(212,134,30,0.14);
     color: var(--brand-mustard);
-    border-color: rgba(200,150,62,0.25);
+    border-color: rgba(212,134,30,0.35);
   }
   .badge-sale {
-    background: rgba(194,70,46,0.10);
+    background: rgba(192,50,26,0.12);
     color: var(--brand-red);
-    border-color: rgba(194,70,46,0.25);
+    border-color: rgba(192,50,26,0.35);
   }
 
   /* ── Sticky header glass morphism ── */
   .header-glass {
-    background: rgba(250, 245, 234, 0.88);
-    backdrop-filter: blur(16px) saturate(180%);
-    -webkit-backdrop-filter: blur(16px) saturate(180%);
-    border-bottom: 1px solid rgba(212,180,131,0.4);
+    background: rgba(247, 237, 218, 0.92);
+    backdrop-filter: blur(20px) saturate(200%);
+    -webkit-backdrop-filter: blur(20px) saturate(200%);
+    border-bottom: 1px solid rgba(176,125,42,0.5);
   }
 
   /* ── Ingredient card ── */

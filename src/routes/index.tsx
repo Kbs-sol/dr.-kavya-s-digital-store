@@ -4,9 +4,10 @@ import { Suspense, useEffect, useRef, useState } from "react";
 import { getProducts, getTestimonials } from "@/lib/site.functions";
 import { ProductCard } from "@/components/ProductCard";
 import { Testimonials } from "@/components/Testimonials";
+import { HairConcernTrigger } from "@/components/HairConcernChooser";
+import { Leaf, Sparkles, ShieldCheck, HeartHandshake, Star, ArrowRight, ChevronRight, Truck, RotateCcw, Lock, Phone } from "lucide-react";
 import heroImg from "@/assets/hero-flatlay.jpg";
 import storyImg from "@/assets/story.jpg";
-import { Leaf, Sparkles, ShieldCheck, HeartHandshake, Star, ArrowRight, ChevronRight, Truck, RotateCcw, Lock, Phone } from "lucide-react";
 
 export const Route = createFileRoute("/")(  {
   head: () => ({
@@ -152,12 +153,7 @@ function Hero() {
               Shop All Products
               <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-1 transition-transform" />
             </Link>
-            <Link
-              to="/quiz"
-              className="inline-flex items-center gap-2 border border-brand-brown/30 text-brand-brown font-wordmark text-[11px] tracking-widest uppercase px-8 py-4 hover:border-brand-brown hover:bg-brand-cream transition-all duration-300"
-            >
-              Take Hair Quiz
-            </Link>
+            <HairConcernTrigger />
           </div>
 
           {/* Trust pillars row */}
@@ -323,12 +319,11 @@ function StoryStrip() {
             <span className="font-wordmark text-[10px] text-brand-tan/70 tracking-[0.25em] uppercase">Our Story</span>
           </div>
           <h2 className="font-display text-4xl md:text-5xl leading-tight">
-            A doctor's daughter,<br />
-            <em className="text-brand-tan">her mother's recipes.</em>
+            A doctor, her mother,<br />
+            <em className="text-brand-tan">and a kitchen full of herbs.</em>
           </h2>
           <p className="mt-6 text-brand-cream/70 leading-relaxed max-w-md">
-            Dr. Kavya Reddy grew up watching her mother grind herbs, dry roots and blend oils in their Visakhapatnam kitchen.
-            After years in medicine, she came back to those roots — literally.
+            Dr. Kavya Reddy is a dentist from Visakhapatnam who turned her mother's handcrafted herbal recipes into something extraordinary — 100% natural, chemical-free products made in small batches from home-kitchen wisdom.
           </p>
           <p className="mt-4 text-brand-cream/70 leading-relaxed max-w-md">
             Every product you order is made in small batches, packed by hand, and shipped within days — not weeks.
@@ -611,6 +606,44 @@ function Promise() {
   );
 }
 
+/* ─── Hair Concern Section (inline CTA strip) ─────────────────── */
+function HairConcernSection() {
+  const { ref, visible } = useReveal();
+  return (
+    <section
+      ref={ref}
+      className={`bg-[#1A0F05] py-16 md:py-20 transition-all duration-700 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
+    >
+      <div className="max-w-5xl mx-auto px-6 text-center">
+        <div className="inline-flex items-center gap-2 mb-4">
+          <span className="w-6 h-px bg-[#B07D2A]/50" />
+          <span className="font-wordmark text-[10px] text-[#B07D2A] tracking-[0.25em] uppercase">Personalised Care</span>
+          <span className="w-6 h-px bg-[#B07D2A]/50" />
+        </div>
+        <h2 className="font-display text-3xl md:text-4xl text-[#F8EDD8] mb-3">
+          Not sure what you need?
+        </h2>
+        <p className="font-sans text-[#F8EDD8]/60 max-w-lg mx-auto mb-8 text-sm leading-relaxed">
+          Tell us your hair concern — hair fall, dandruff, dryness or growth — and Dr. Kavya will show you exactly what works.
+        </p>
+        <div className="flex flex-wrap gap-3 justify-center">
+          {["🌿 Hair Loss", "✨ Hair Growth", "❄️ Dandruff", "💧 Dry & Damage", "🫧 Oily Scalp"].map((label) => (
+            <span
+              key={label}
+              className="font-wordmark text-[10px] tracking-widest uppercase border border-[#B07D2A]/30 text-[#E8C07A] px-4 py-2"
+            >
+              {label}
+            </span>
+          ))}
+        </div>
+        <div className="mt-8">
+          <HairConcernTrigger className="mx-auto" />
+        </div>
+      </div>
+    </section>
+  );
+}
+
 /* ─── JSON-LD ─────────────────────────────────────────────────── */
 function HomeSchema() {
   const schema = {
@@ -655,6 +688,7 @@ function Home() {
       <Suspense fallback={<div className="h-[600px] bg-white flex items-center justify-center"><div className="w-8 h-8 border-2 border-brand-gold border-t-transparent rounded-full animate-spin" /></div>}>
         <FeaturedProducts />
       </Suspense>
+      <HairConcernSection />
       <StoryStrip />
       <IngredientsSection />
       <SocialProof />
