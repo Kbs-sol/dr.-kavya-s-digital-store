@@ -28,25 +28,35 @@ function createAdminFetch(key: string): typeof fetch {
 }
 
 // ─── No-op admin stub ────────────────────────────────────────────────────
-// IMPORTANT: Target must be a function so `apply` trap fires on chained calls
+// Uses same builder-pattern noopQB as client.ts — all methods chainable,
+// thenable so `await` resolves to {data:null, error:null}.
 function createNoOpAdmin() {
   const noop = async () => ({ data: null, error: null, count: null });
+  const noopResult = { data: null, error: null, count: null, status: 200, statusText: 'OK' };
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  const noopFn: any = new Proxy(function() {} as any, {
-    get(_target, prop) {
-      if (prop === 'then' || prop === Symbol.toPrimitive) return undefined;
-      return noopFn;
-    },
-    apply() {
-      return Promise.resolve({ data: null, error: null, count: null, status: 200, statusText: 'OK' });
-    },
-  });
+  const noopQB: any = {
+    select: () => noopQB, insert: () => noopQB, update: () => noopQB,
+    upsert: () => noopQB, delete: () => noopQB,
+    eq: () => noopQB, neq: () => noopQB, gt: () => noopQB, gte: () => noopQB,
+    lt: () => noopQB, lte: () => noopQB, like: () => noopQB, ilike: () => noopQB,
+    is: () => noopQB, in: () => noopQB, contains: () => noopQB, containedBy: () => noopQB,
+    range: () => noopQB, order: () => noopQB, limit: () => noopQB, offset: () => noopQB,
+    single: () => noopQB, maybeSingle: () => noopQB, returns: () => noopQB,
+    count: () => noopQB, head: () => noopQB, explain: () => noopQB,
+    filter: () => noopQB, match: () => noopQB, or: () => noopQB, not: () => noopQB,
+    textSearch: () => noopQB, overlaps: () => noopQB, throwOnError: () => noopQB,
+    then: (resolve: (v: any) => any) => Promise.resolve(noopResult).then(resolve),
+    catch: (reject: (e: any) => any) => Promise.resolve(noopResult).catch(reject),
+    finally: (cb: () => void) => Promise.resolve(noopResult).finally(cb),
+  };
 
   return {
-    from: () => noopFn,
+    from: () => noopQB,
     rpc: noop,
-    auth: { admin: { createUser: noop, deleteUser: noop, listUsers: noop } },
+    auth: {
+      admin: { createUser: noop, deleteUser: noop, listUsers: noop },
+      getClaims: async () => ({ data: null, error: { message: 'Not configured' } }),
+    },
     storage: { from: () => ({ upload: noop, getPublicUrl: () => ({ data: { publicUrl: '' } }) }) },
   } as unknown as SupabaseClient<Database>;
 }

@@ -32,36 +32,73 @@ function createSupabaseFetch(key: string): typeof fetch {
 }
 
 // ─── No-op stub (returned when env vars are absent) ───────────────────────
-// IMPORTANT: The Proxy target MUST be a function so the `apply` trap fires
-// when chained calls like .from('x').select('*').eq('id', y) are invoked.
-// Using `{}` as target means apply is never called → "not a function" error.
+// The Supabase query builder uses a fluent/builder pattern:
+//   supabase.from('t').select('*').eq('id', x).maybeSingle()
+// All intermediate calls (.select, .eq, .order, .limit…) must return a
+// chain-able object. The final await/.then() must receive {data,error}.
+//
+// Solution: make noopQB an object with explicit no-op methods for every
+// builder method Supabase uses, all returning `noopQB` itself (synchronous
+// chaining). Add a custom `then` so `await noopQB` resolves to {data:null}.
 function createNoOpClient() {
   const noop = async () => ({ data: null, error: null, count: null });
+  const noopResult = { data: null, error: null, count: null, status: 200, statusText: 'OK' };
 
-  // noopFn is both an object AND callable — safe for any Supabase query chain
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  const noopFn: any = new Proxy(function() {} as any, {
-    get(_target, prop) {
-      // Allow then/Symbol to work normally so async callers resolve correctly
-      if (prop === 'then' || prop === Symbol.toPrimitive) return undefined;
-      return noopFn;
-    },
-    apply() {
-      // When called as a function, return a Promise resolving to empty result
-      return Promise.resolve({ data: null, error: null, count: null, status: 200, statusText: 'OK' });
-    },
-  });
+  // Builder object — all query builder methods return itself for chaining.
+  // `then` makes it a thenable so `await noopQB` resolves to noopResult.
+  const noopQB: any = {
+    // Builder methods (synchronous, return this for chaining)
+    select: () => noopQB,
+    insert: () => noopQB,
+    update: () => noopQB,
+    upsert: () => noopQB,
+    delete: () => noopQB,
+    eq: () => noopQB,
+    neq: () => noopQB,
+    gt: () => noopQB,
+    gte: () => noopQB,
+    lt: () => noopQB,
+    lte: () => noopQB,
+    like: () => noopQB,
+    ilike: () => noopQB,
+    is: () => noopQB,
+    in: () => noopQB,
+    contains: () => noopQB,
+    containedBy: () => noopQB,
+    range: () => noopQB,
+    order: () => noopQB,
+    limit: () => noopQB,
+    offset: () => noopQB,
+    single: () => noopQB,
+    maybeSingle: () => noopQB,
+    returns: () => noopQB,
+    count: () => noopQB,
+    head: () => noopQB,
+    explain: () => noopQB,
+    filter: () => noopQB,
+    match: () => noopQB,
+    or: () => noopQB,
+    not: () => noopQB,
+    textSearch: () => noopQB,
+    overlaps: () => noopQB,
+    throwOnError: () => noopQB,
+    // Terminal: makes `await noopQB` work without Promises from builder methods
+    then: (resolve: (v: any) => any) => Promise.resolve(noopResult).then(resolve),
+    catch: (reject: (e: any) => any) => Promise.resolve(noopResult).catch(reject),
+    finally: (cb: () => void) => Promise.resolve(noopResult).finally(cb),
+  };
 
   return {
-    from: () => noopFn,
+    from: () => noopQB,
     rpc: noop,
     storage: { from: () => ({ upload: noop, getPublicUrl: () => ({ data: { publicUrl: '' } }) }) },
+    channel: () => ({ on: () => ({ subscribe: () => {} }) }),
+    removeChannel: () => {},
     auth: {
       getSession: async () => ({ data: { session: null }, error: null }),
       getUser: async () => ({ data: { user: null }, error: null }),
       getClaims: async () => ({ data: null, error: { message: 'Not configured' } }),
       onAuthStateChange: (_: any, cb: any) => {
-        // immediately call with null session so UI shows signed-out state
         setTimeout(() => cb('SIGNED_OUT', null), 0);
         return { data: { subscription: { unsubscribe: () => {} } } };
       },
