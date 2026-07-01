@@ -28,11 +28,23 @@ function createAdminFetch(key: string): typeof fetch {
 }
 
 // ─── No-op admin stub ────────────────────────────────────────────────────
+// IMPORTANT: Target must be a function so `apply` trap fires on chained calls
 function createNoOpAdmin() {
   const noop = async () => ({ data: null, error: null, count: null });
-  const noopQB: any = new Proxy({}, { get: () => noopQB, apply: () => noop() });
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  const noopFn: any = new Proxy(function() {} as any, {
+    get(_target, prop) {
+      if (prop === 'then' || prop === Symbol.toPrimitive) return undefined;
+      return noopFn;
+    },
+    apply() {
+      return Promise.resolve({ data: null, error: null, count: null, status: 200, statusText: 'OK' });
+    },
+  });
+
   return {
-    from: () => noopQB,
+    from: () => noopFn,
     rpc: noop,
     auth: { admin: { createUser: noop, deleteUser: noop, listUsers: noop } },
     storage: { from: () => ({ upload: noop, getPublicUrl: () => ({ data: { publicUrl: '' } }) }) },

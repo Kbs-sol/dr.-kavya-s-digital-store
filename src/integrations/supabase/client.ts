@@ -32,20 +32,34 @@ function createSupabaseFetch(key: string): typeof fetch {
 }
 
 // ─── No-op stub (returned when env vars are absent) ───────────────────────
+// IMPORTANT: The Proxy target MUST be a function so the `apply` trap fires
+// when chained calls like .from('x').select('*').eq('id', y) are invoked.
+// Using `{}` as target means apply is never called → "not a function" error.
 function createNoOpClient() {
   const noop = async () => ({ data: null, error: null, count: null });
-  const noopQB: any = new Proxy({}, {
-    get: () => noopQB,
-    apply: () => noop(),
+
+  // noopFn is both an object AND callable — safe for any Supabase query chain
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  const noopFn: any = new Proxy(function() {} as any, {
+    get(_target, prop) {
+      // Allow then/Symbol to work normally so async callers resolve correctly
+      if (prop === 'then' || prop === Symbol.toPrimitive) return undefined;
+      return noopFn;
+    },
+    apply() {
+      // When called as a function, return a Promise resolving to empty result
+      return Promise.resolve({ data: null, error: null, count: null, status: 200, statusText: 'OK' });
+    },
   });
 
   return {
-    from: () => noopQB,
+    from: () => noopFn,
     rpc: noop,
     storage: { from: () => ({ upload: noop, getPublicUrl: () => ({ data: { publicUrl: '' } }) }) },
     auth: {
       getSession: async () => ({ data: { session: null }, error: null }),
       getUser: async () => ({ data: { user: null }, error: null }),
+      getClaims: async () => ({ data: null, error: { message: 'Not configured' } }),
       onAuthStateChange: (_: any, cb: any) => {
         // immediately call with null session so UI shows signed-out state
         setTimeout(() => cb('SIGNED_OUT', null), 0);
