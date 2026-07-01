@@ -10,13 +10,11 @@ export const Route = createFileRoute("/shop/")({
   validateSearch: (s) => search.parse(s),
   loaderDeps: ({ search }) => ({ category: search.category }),
   loader: async ({ context, deps }) => {
-    await Promise.all([
-      context.queryClient.prefetchQuery({ queryKey: ["categories"], queryFn: () => getCategories() }),
-      context.queryClient.prefetchQuery({
-        queryKey: ["products", { categorySlug: deps.category }],
-        queryFn: () => getProducts({ data: { categorySlug: deps.category } }),
-      }),
-    ]);
+    await context.queryClient.prefetchQuery({ queryKey: ["categories"], queryFn: () => getCategories() });
+    await context.queryClient.prefetchQuery({
+      queryKey: ["products", { categorySlug: deps.category }],
+      queryFn: () => getProducts({ data: { categorySlug: deps.category } }),
+    });
   },
   component: Shop,
 });

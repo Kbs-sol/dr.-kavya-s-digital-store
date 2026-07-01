@@ -1,208 +1,167 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Logo } from "@/components/Logo";
 import { toast } from "sonner";
-import { Mail, CheckCircle, ArrowLeft, Loader } from "lucide-react";
+import { Mail, ArrowLeft, Sparkles } from "lucide-react";
 
-export const Route = createFileRoute("/auth")({ component: Auth });
+export const Route = createFileRoute("/auth")({
+  head: () => ({
+    meta: [
+      { title: "Sign In — Dr. Kavya's" },
+      { name: "robots", content: "noindex" },
+    ],
+  }),
+  component: Auth,
+});
 
-/* ──────────────────────────────────────────────────────────
-   Magic Link only authentication
-   No passwords — email link = secure, frictionless login
-   ────────────────────────────────────────────────────────── */
 function Auth() {
   const nav = useNavigate();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
 
-  /* Handle magic-link callback after user clicks email link */
-  useEffect(() => {
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
-        nav({ to: "/account" });
-      }
-    });
-    return () => sub.subscription.unsubscribe();
-  }, [nav]);
-
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!email.trim()) return;
     setLoading(true);
     try {
       const { error } = await supabase.auth.signInWithOtp({
-        email: email.trim().toLowerCase(),
+        email,
         options: {
           emailRedirectTo: `${window.location.origin}/account`,
-          shouldCreateUser: true, // auto-creates account on first login
+          shouldCreateUser: true,
         },
       });
       if (error) throw error;
       setSent(true);
     } catch (e: any) {
-      toast.error(e?.message ?? "Could not send magic link. Please try again.");
+      toast.error(e?.message ?? "Failed to send magic link. Please try again.");
     } finally {
       setLoading(false);
     }
   }
 
-  async function googleSignIn() {
-    const { error } = await supabase.auth.signInWithOAuth({
+  async function google() {
+    await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/account`,
-        queryParams: { access_type: "offline", prompt: "consent" },
-      },
+      options: { redirectTo: `${window.location.origin}/account` },
     });
-    if (error) toast.error(error.message);
   }
+
+  const inputClass =
+    "w-full bg-transparent border border-border px-4 py-3.5 text-sm focus:outline-none focus:border-brand-brown transition placeholder:text-foreground/30";
 
   return (
     <div className="min-h-screen bg-kraft flex items-center justify-center px-6 py-16">
-      {/* Background botanical decoration */}
-      <div
-        className="absolute inset-0 pointer-events-none opacity-5"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%233D2F1A' fill-opacity='1'%3E%3Cpath d='M30 30c0-11-9-20-20-20S-10 19-10 30 -1 50 10 50s20-9 20-20zm0 0c0 11 9 20 20 20s20-9 20-20-9-20-20-20-20 9-20 20z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-        }}
-        aria-hidden="true"
-      />
+      <div className="w-full max-w-md">
+        {/* Back link */}
+        <Link to="/" className="inline-flex items-center gap-2 font-wordmark text-[10px] tracking-widest uppercase text-foreground/50 hover:text-brand-brown transition mb-10">
+          <ArrowLeft className="h-3.5 w-3.5" />
+          Back to site
+        </Link>
 
-      <div className="w-full max-w-md relative z-10">
-        {/* Card */}
-        <div className="bg-card border border-border p-10 shadow-sm">
+        <div className="bg-white border border-border p-10 shadow-sm">
           {/* Logo */}
           <div className="text-center mb-8">
             <Logo />
           </div>
 
-          {!sent ? (
+          {sent ? (
+            /* ── Sent state ── */
+            <div className="text-center">
+              <div className="w-16 h-16 bg-brand-green/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Mail className="h-7 w-7 text-brand-green" />
+              </div>
+              <h2 className="font-display text-2xl text-brand-brown mb-3">Check your inbox</h2>
+              <p className="text-sm text-muted-foreground leading-relaxed mb-6">
+                We've sent a magic sign-in link to{" "}
+                <strong className="text-brand-brown">{email}</strong>
+                . Click the link to sign in — no password needed.
+              </p>
+              <p className="text-xs text-muted-foreground mb-8">
+                Didn't get the email? Check your spam folder, or{" "}
+                <button
+                  onClick={() => setSent(false)}
+                  className="text-brand-gold hover:text-brand-brown underline"
+                >
+                  try again
+                </button>
+                .
+              </p>
+              <Link
+                to="/"
+                className="inline-flex items-center gap-2 bg-brand-cream border border-border font-wordmark text-[10px] tracking-widest uppercase px-6 py-3 hover:bg-brand-brown hover:text-brand-cream hover:border-brand-brown transition"
+              >
+                Continue browsing
+              </Link>
+            </div>
+          ) : (
+            /* ── Sign in form ── */
             <>
-              {/* Header */}
               <div className="text-center mb-8">
-                <h1 className="font-display text-2xl text-brand-brown mb-2">
-                  Sign in or create account
-                </h1>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  Enter your email and we'll send a secure magic link — no password needed.
+                <h2 className="font-display text-2xl text-brand-brown">Welcome</h2>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Sign in with a magic link — no password required.
                 </p>
               </div>
 
               {/* Google OAuth */}
               <button
-                onClick={googleSignIn}
-                className="w-full flex items-center justify-center gap-3 border border-border py-3.5 text-sm font-wordmark text-[10px] hover:border-brand-brown hover:bg-brand-brown/4 transition mb-5 group"
-                type="button"
+                onClick={google}
+                className="w-full border border-border py-3.5 text-sm hover:border-brand-brown hover:bg-brand-cream transition flex items-center justify-center gap-3 mb-6 font-wordmark text-[10px] tracking-widest uppercase"
               >
-                <svg width="18" height="18" viewBox="0 0 18 18">
-                  <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/>
-                  <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/>
-                  <path fill="#FBBC05" d="M3.964 10.706c-.18-.54-.282-1.117-.282-1.706s.102-1.166.282-1.706V4.962H.957C.347 6.175 0 7.55 0 9s.348 2.825.957 4.038l3.007-2.332z"/>
-                  <path fill="#EA4335" d="M9 3.583c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.962L3.964 6.294C4.672 4.167 6.656 3.583 9 3.583z"/>
+                <svg className="h-4 w-4" viewBox="0 0 24 24">
+                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                 </svg>
                 Continue with Google
               </button>
 
-              {/* Divider */}
-              <div className="relative mb-5">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-border" />
-                </div>
-                <div className="relative flex justify-center">
-                  <span className="bg-card px-4 text-[10px] font-wordmark text-muted-foreground">or continue with email</span>
-                </div>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="flex-1 h-px bg-border" />
+                <span className="font-wordmark text-[9px] text-muted-foreground tracking-widest uppercase">or with email</span>
+                <div className="flex-1 h-px bg-border" />
               </div>
 
-              {/* Magic link form */}
               <form onSubmit={onSubmit} className="space-y-4">
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <div>
+                  <label className="font-wordmark text-[9px] tracking-widest uppercase text-foreground/50 block mb-2">
+                    Email address
+                  </label>
                   <input
                     required
                     type="email"
-                    placeholder="your@email.com"
-                    className="form-input pl-10"
+                    placeholder="you@example.com"
+                    className={inputClass}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     autoComplete="email"
-                    autoFocus
                   />
                 </div>
                 <button
-                  disabled={loading || !email.trim()}
-                  className="btn-primary w-full gap-2 btn-shimmer"
                   type="submit"
+                  disabled={loading}
+                  className="w-full bg-brand-brown text-brand-cream font-wordmark text-[11px] tracking-widest uppercase py-4 hover:bg-brand-gold transition disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                   {loading ? (
-                    <>
-                      <span className="inline-block w-4 h-4 border-2 border-brand-cream/30 border-t-brand-cream rounded-full animate-spin" />
-                      Sending link…
-                    </>
+                    <div className="w-4 h-4 border-2 border-brand-cream/40 border-t-brand-cream rounded-full animate-spin" />
                   ) : (
-                    <>Send Magic Link</>
+                    <>
+                      <Sparkles className="h-3.5 w-3.5" />
+                      Send Magic Link
+                    </>
                   )}
                 </button>
               </form>
 
-              {/* Trust copy */}
-              <div className="mt-6 text-center space-y-2">
-                <p className="text-[10px] text-muted-foreground">
-                  ✓ No password required &nbsp;·&nbsp; ✓ One-click login &nbsp;·&nbsp; ✓ Secure
-                </p>
-                <p className="text-[10px] text-muted-foreground">
-                  New here? An account is created automatically on first login.
-                </p>
-              </div>
-
-              {/* Back link */}
-              <div className="mt-6 text-center">
-                <Link to="/" className="inline-flex items-center gap-1 text-[10px] font-wordmark text-brand-gold hover:text-brand-brown transition">
-                  <ArrowLeft className="h-3 w-3" />
-                  Back to site
-                </Link>
-              </div>
-            </>
-          ) : (
-            /* ── Sent confirmation state ── */
-            <div className="text-center py-4">
-              <div className="flex justify-center mb-5">
-                <div className="w-16 h-16 bg-brand-green/10 border border-brand-green/25 flex items-center justify-center">
-                  <CheckCircle className="h-7 w-7 text-brand-green" />
-                </div>
-              </div>
-              <h2 className="font-display text-2xl text-brand-brown mb-3">
-                Check your inbox
-              </h2>
-              <p className="text-sm text-muted-foreground leading-relaxed mb-6 max-w-sm mx-auto">
-                We've sent a magic link to{" "}
-                <span className="font-medium text-brand-brown">{email}</span>.
-                Click the link in the email to sign in — it expires in 1 hour.
+              <p className="mt-6 text-xs text-muted-foreground text-center leading-relaxed">
+                A sign-in link will be emailed to you. New customers get an account automatically.
               </p>
-              <div className="bg-brand-cream/60 border border-border p-4 text-xs text-muted-foreground leading-relaxed mb-6">
-                <strong className="text-brand-brown">Can't find it?</strong> Check your spam or
-                promotions folder. Or{" "}
-                <button
-                  onClick={() => setSent(false)}
-                  className="text-brand-gold hover:text-brand-brown underline underline-offset-2 transition"
-                >
-                  try a different email
-                </button>
-                .
-              </div>
-              <Link to="/" className="inline-flex items-center gap-1 text-[10px] font-wordmark text-brand-gold hover:text-brand-brown transition">
-                <ArrowLeft className="h-3 w-3" />
-                Back to site
-              </Link>
-            </div>
+            </>
           )}
         </div>
-
-        {/* Tagline below card */}
-        <p className="text-center mt-6 font-hand text-brand-gold text-lg opacity-70">
-          Pure care, pure trust.
-        </p>
       </div>
     </div>
   );
