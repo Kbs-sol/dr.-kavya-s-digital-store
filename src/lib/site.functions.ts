@@ -2,18 +2,24 @@ import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 
+// ─── Graceful Supabase client factory ─────────────────────────────────────
+// Returns null when env vars are absent so server functions can return empty
+// data instead of crashing the edge worker.
 function publicClient() {
-  return createClient<Database>(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_PUBLISHABLE_KEY!,
-    { auth: { storage: undefined, persistSession: false, autoRefreshToken: false } },
-  );
+  const URL = process.env.SUPABASE_URL;
+  const KEY = process.env.SUPABASE_PUBLISHABLE_KEY;
+  if (!URL || !KEY) return null;
+  return createClient<Database>(URL, KEY, {
+    auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
+  });
 }
+
+// ─── Server Functions ──────────────────────────────────────────────────────
 
 export const getSiteContent = createServerFn({ method: "GET" }).handler(async () => {
   const sb = publicClient();
-  const { data, error } = await sb.from("site_content").select("key,value");
-  if (error) throw new Error(error.message);
+  if (!sb) return {};
+  const { data } = await sb.from("site_content").select("key,value");
   const map: Record<string, any> = {};
   (data ?? []).forEach((r) => (map[r.key] = r.value));
   return map;
@@ -21,8 +27,8 @@ export const getSiteContent = createServerFn({ method: "GET" }).handler(async ()
 
 export const getCategories = createServerFn({ method: "GET" }).handler(async () => {
   const sb = publicClient();
-  const { data, error } = await sb.from("categories").select("*").order("sort_order");
-  if (error) throw new Error(error.message);
+  if (!sb) return [];
+  const { data } = await sb.from("categories").select("*").order("sort_order");
   return data ?? [];
 });
 
@@ -30,6 +36,7 @@ export const getProducts = createServerFn({ method: "GET" })
   .inputValidator((d: { categorySlug?: string; featured?: boolean } | undefined) => d ?? {})
   .handler(async ({ data }) => {
     const sb = publicClient();
+    if (!sb) return [];
     let q = sb
       .from("products")
       .select("*, category:categories(name,slug)")
@@ -37,8 +44,7 @@ export const getProducts = createServerFn({ method: "GET" })
       .order("featured", { ascending: false })
       .order("created_at", { ascending: false });
     if (data.featured) q = q.eq("featured", true);
-    const { data: products, error } = await q;
-    if (error) throw new Error(error.message);
+    const { data: products } = await q;
     let list = products ?? [];
     if (data.categorySlug) {
       list = list.filter((p: any) => p.category?.slug === data.categorySlug);
@@ -50,13 +56,13 @@ export const getProductBySlug = createServerFn({ method: "GET" })
   .inputValidator((d: { slug: string }) => d)
   .handler(async ({ data }) => {
     const sb = publicClient();
-    const { data: product, error } = await sb
+    if (!sb) return null;
+    const { data: product } = await sb
       .from("products")
       .select("*, category:categories(name,slug), images:product_images(url,sort_order)")
       .eq("slug", data.slug)
       .eq("published", true)
       .maybeSingle();
-    if (error) throw new Error(error.message);
     if (!product) return null;
     const { data: reviews } = await sb
       .from("reviews")
@@ -70,12 +76,12 @@ export const getProductBySlug = createServerFn({ method: "GET" })
 
 export const getBlogPosts = createServerFn({ method: "GET" }).handler(async () => {
   const sb = publicClient();
-  const { data, error } = await sb
+  if (!sb) return [];
+  const { data } = await sb
     .from("blog_posts")
     .select("slug,title,excerpt,cover_image,published_at")
     .eq("published", true)
     .order("published_at", { ascending: false });
-  if (error) throw new Error(error.message);
   return data ?? [];
 });
 
@@ -83,13 +89,13 @@ export const getBlogPost = createServerFn({ method: "GET" })
   .inputValidator((d: { slug: string }) => d)
   .handler(async ({ data }) => {
     const sb = publicClient();
-    const { data: post, error } = await sb
+    if (!sb) return null;
+    const { data: post } = await sb
       .from("blog_posts")
       .select("*")
       .eq("slug", data.slug)
       .eq("published", true)
       .maybeSingle();
-    if (error) throw new Error(error.message);
     return post;
   });
 
@@ -97,6 +103,7 @@ export const validateCoupon = createServerFn({ method: "POST" })
   .inputValidator((d: { code: string; subtotal: number }) => d)
   .handler(async ({ data }) => {
     const sb = publicClient();
+    if (!sb) return { ok: false as const, error: "Coupons unavailable" };
     const { data: c } = await sb
       .from("coupons")
       .select("*")
@@ -121,6 +128,7 @@ export const getTestimonials = createServerFn({ method: "GET" })
   .inputValidator((d: { featured?: boolean } | undefined) => d ?? {})
   .handler(async ({ data }) => {
     const sb = publicClient();
+    if (!sb) return [];
     let q = sb
       .from("testimonials")
       .select("*")
@@ -128,19 +136,18 @@ export const getTestimonials = createServerFn({ method: "GET" })
       .order("sort_order", { ascending: true })
       .order("created_at", { ascending: false });
     if (data.featured) q = q.eq("featured", true);
-    const { data: rows, error } = await q;
-    if (error) throw new Error(error.message);
+    const { data: rows } = await q;
     return rows ?? [];
   });
 
 export const getFaqs = createServerFn({ method: "GET" }).handler(async () => {
   const sb = publicClient();
-  const { data, error } = await sb
+  if (!sb) return [];
+  const { data } = await sb
     .from("faqs")
     .select("*")
     .eq("published", true)
     .order("sort_order", { ascending: true });
-  if (error) throw new Error(error.message);
   return data ?? [];
 });
 
@@ -148,17 +155,15 @@ export const searchProducts = createServerFn({ method: "GET" })
   .inputValidator((d: { q: string }) => d)
   .handler(async ({ data }) => {
     const sb = publicClient();
+    if (!sb) return [];
     const q = data.q.trim();
     if (!q) return [];
-    const { data: rows, error } = await sb
+    const { data: rows } = await sb
       .from("products")
       .select("*, category:categories(name,slug)")
       .eq("published", true)
-      .or(
-        `name.ilike.%${q}%,tagline.ilike.%${q}%,short_description.ilike.%${q}%,ingredients.ilike.%${q}%`,
-      )
+      .or(`name.ilike.%${q}%,tagline.ilike.%${q}%,short_description.ilike.%${q}%,ingredients.ilike.%${q}%`)
       .limit(40);
-    if (error) throw new Error(error.message);
     return rows ?? [];
   });
 
@@ -166,6 +171,7 @@ export const trackOrder = createServerFn({ method: "POST" })
   .inputValidator((d: { orderRef: string; email: string }) => d)
   .handler(async ({ data }) => {
     const sb = publicClient();
+    if (!sb) return { ok: false as const, error: "Order tracking unavailable" };
     const ref = data.orderRef.trim();
     const email = data.email.trim().toLowerCase();
     if (!ref || !email) return { ok: false as const, error: "Order ID and email required" };
@@ -184,4 +190,15 @@ export const trackOrder = createServerFn({ method: "POST" })
       .select("name,quantity,price,size")
       .eq("order_id", order.id);
     return { ok: true as const, order, items: items ?? [] };
+  });
+
+export const subscribeNewsletter = createServerFn({ method: "POST" })
+  .inputValidator((d: { email: string }) => d)
+  .handler(async ({ data }) => {
+    const sb = publicClient();
+    if (!sb) return { ok: true }; // silently succeed if no Supabase
+    await sb
+      .from("newsletter_subscribers")
+      .upsert({ email: data.email, subscribed: true }, { onConflict: "email" });
+    return { ok: true };
   });

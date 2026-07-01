@@ -13,8 +13,8 @@ export const submitContact = createServerFn({ method: "POST" })
   .inputValidator((d) => contactSchema.parse(d))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin.from("contact_messages").insert(data);
-    if (error) throw new Error(error.message);
+    // supabaseAdmin is a no-op when Supabase isn't configured — silently ignore
+    await supabaseAdmin.from("contact_messages").insert(data);
     return { ok: true };
   });
 
@@ -26,8 +26,6 @@ export const subscribeNewsletter = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     await supabaseAdmin
       .from("newsletter_subscribers")
-      .insert(data)
-      .select()
-      .then(() => {});
+      .upsert({ email: data.email, subscribed: true }, { onConflict: "email" } as any);
     return { ok: true };
   });

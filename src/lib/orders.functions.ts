@@ -33,6 +33,11 @@ function orderNumber() {
   return `DK${y}${m}${r}`;
 }
 
+// ─── Check if Supabase is configured server-side ─────────────────────────────
+function isSupabaseConfigured(): boolean {
+  return !!(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY);
+}
+
 async function sendEmail(to: string, subject: string, html: string) {
   const key = process.env.RESEND_API_KEY;
   const lovableKey = process.env.LOVABLE_API_KEY;
@@ -80,6 +85,17 @@ function renderOrderEmail(order: any, items: any[]) {
 export const placeOrder = createServerFn({ method: "POST" })
   .inputValidator((d) => orderInput.parse(d))
   .handler(async ({ data }) => {
+    // Guard: if Supabase is not configured, return a friendly error
+    if (!isSupabaseConfigured()) {
+      return {
+        order_id: null,
+        order_number: null,
+        total: 0,
+        razorpay: null,
+        error: "Payment system not configured yet. Please contact us via WhatsApp to place your order.",
+      };
+    }
+
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     // Re-fetch authoritative prices server-side
@@ -180,7 +196,11 @@ export const placeOrder = createServerFn({ method: "POST" })
       const keyId = process.env.RAZORPAY_KEY_ID;
       const secret = process.env.RAZORPAY_KEY_SECRET;
       if (keyId && secret) {
-        const auth = Buffer.from(`${keyId}:${secret}`).toString("base64");
+        // Cloudflare Workers doesn't have Buffer — use btoa instead
+        const credentials = `${keyId}:${secret}`;
+        const auth = typeof Buffer !== 'undefined'
+          ? Buffer.from(credentials).toString("base64")
+          : btoa(credentials);
         const res = await fetch("https://api.razorpay.com/v1/orders", {
           method: "POST",
           headers: {
@@ -214,6 +234,7 @@ export const placeOrder = createServerFn({ method: "POST" })
       order_number: number,
       total,
       razorpay,
+      error: null,
     };
   });
 
@@ -227,10 +248,20 @@ export const verifyRazorpayPayment = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const secret = process.env.RAZORPAY_KEY_SECRET;
     if (!secret) throw new Error("Razorpay not configured");
-    const { createHmac } = await import("crypto");
-    const expected = createHmac("sha256", secret)
-      .update(`${data.razorpay_order_id}|${data.razorpay_payment_id}`)
-      .digest("hex");
+
+    // Use Web Crypto API (works in Cloudflare Workers)
+    const encoder = new TextEncoder();
+    const keyData = encoder.encode(secret);
+    const msgData = encoder.encode(`${data.razorpay_order_id}|${data.razorpay_payment_id}`);
+
+    const cryptoKey = await crypto.subtle.importKey(
+      "raw", keyData, { name: "HMAC", hash: "SHA-256" }, false, ["sign"]
+    );
+    const signature = await crypto.subtle.sign("HMAC", cryptoKey, msgData);
+    const expected = Array.from(new Uint8Array(signature))
+      .map(b => b.toString(16).padStart(2, "0"))
+      .join("");
+
     if (expected !== data.razorpay_signature) throw new Error("Invalid signature");
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -280,6 +311,9 @@ export const verifyRazorpayPayment = createServerFn({ method: "POST" })
 export const getMyOrder = createServerFn({ method: "GET" })
   .inputValidator((d: { id: string }) => d)
   .handler(async ({ data }) => {
+    // Guard: if no Supabase, return null gracefully
+    if (!isSupabaseConfigured()) return null;
+
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: order } = await supabaseAdmin
       .from("orders")

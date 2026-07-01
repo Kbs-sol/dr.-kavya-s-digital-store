@@ -2,7 +2,14 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 
+// ─── Guard: check if Supabase is configured ───────────────────────────────────
+function isSupabaseConfigured(): boolean {
+  return !!(process.env.SUPABASE_URL && process.env.SUPABASE_PUBLISHABLE_KEY);
+}
+
 async function assertAdmin(ctx: { supabase: any; userId: string }) {
+  // If supabase is a no-op (not configured), every rpc() returns { data: null, error: null }
+  // which would mean isAdmin = false → Forbidden. That's intentional — protect admin routes.
   const { data, error } = await ctx.supabase.rpc("has_role", {
     _user_id: ctx.userId,
     _role: "admin",
@@ -14,6 +21,8 @@ async function assertAdmin(ctx: { supabase: any; userId: string }) {
 export const checkAdmin = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
+    // requireSupabaseAuth will throw "Supabase is not configured" if env vars missing
+    // That error is caught by the client — returns { isAdmin: false }
     const { data } = await context.supabase.rpc("has_role", {
       _user_id: context.userId,
       _role: "admin",
@@ -25,6 +34,7 @@ export const adminBootstrap = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     // First-ever admin: if no admins exist, grant the current user admin.
+    if (!isSupabaseConfigured()) return { ok: false, reason: "Supabase not configured" };
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { count } = await supabaseAdmin
       .from("user_roles")
