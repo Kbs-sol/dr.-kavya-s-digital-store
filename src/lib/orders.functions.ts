@@ -309,7 +309,7 @@ export const verifyRazorpayPayment = createServerFn({ method: "POST" })
   });
 
 export const getMyOrder = createServerFn({ method: "GET" })
-  .inputValidator((d: { id: string }) => d)
+  .inputValidator((d: { id: string; email: string }) => d)
   .handler(async ({ data }) => {
     // Guard: if no Supabase, return null gracefully
     if (!isSupabaseConfigured()) return null;
@@ -321,6 +321,7 @@ export const getMyOrder = createServerFn({ method: "GET" })
       .eq("id", data.id)
       .maybeSingle();
     if (!order) return null;
+    if ((order.email ?? "").toLowerCase() !== data.email.toLowerCase()) return null;
     const { data: items } = await supabaseAdmin
       .from("order_items")
       .select("*")
