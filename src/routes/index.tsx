@@ -438,7 +438,7 @@ function TestimonialsBlock() {
           <span className="w-6 h-px bg-brand-gold" />
         </div>
         <h2 className="font-display text-4xl md:text-5xl text-brand-brown text-center mb-14">What people say</h2>
-        <Testimonials testimonials={testimonials} />
+        <Testimonials items={testimonials} />
       </div>
     </section>
   );
@@ -513,7 +513,7 @@ function Newsletter() {
       const { supabase } = await import("@/integrations/supabase/client");
       const { error } = await supabase
         .from("newsletter_subscribers")
-        .upsert({ email, subscribed: true }, { onConflict: "email" });
+        .upsert({ email } as any, { onConflict: "email" });
       if (error) throw error;
       setState("done");
       setEmail("");

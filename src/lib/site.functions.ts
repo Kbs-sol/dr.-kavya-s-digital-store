@@ -199,6 +199,6 @@ export const subscribeNewsletter = createServerFn({ method: "POST" })
     if (!sb) return { ok: true }; // silently succeed if no Supabase
     await sb
       .from("newsletter_subscribers")
-      .upsert({ email: data.email, subscribed: true }, { onConflict: "email" });
+      .upsert({ email: data.email } as any, { onConflict: "email" });
     return { ok: true };
   });

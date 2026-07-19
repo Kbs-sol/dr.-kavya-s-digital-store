@@ -337,8 +337,7 @@ function AddToCartBlock({ product, inStock, price }: { product: any; inStock: bo
       price,
       image: product.cover_image ?? "",
       size: product.size ?? null,
-      quantity: qty,
-    });
+    }, qty);
     toast.success(`${product.name} added to cart`);
     /* Fire Meta Pixel AddToCart event */
     if (typeof window !== "undefined" && (window as any).fbq) {

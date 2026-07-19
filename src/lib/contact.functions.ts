@@ -26,6 +26,6 @@ export const subscribeNewsletter = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     await supabaseAdmin
       .from("newsletter_subscribers")
-      .upsert({ email: data.email, subscribed: true }, { onConflict: "email" } as any);
+      .upsert({ email: data.email } as any, { onConflict: "email" } as any);
     return { ok: true };
   });
